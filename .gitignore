@@ -29,3 +29,6 @@
 
 #Code::Blocks
 *.depend
+
+#release
+*release
