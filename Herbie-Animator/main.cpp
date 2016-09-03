@@ -19,7 +19,7 @@ int main()
             }
             herbie.translateEvent(event);
         }
-        herbie.continuousEvents();
+        herbie.continuousEvents(actClock.getElapsedTime().asSeconds());
         herbie.act(actClock.getElapsedTime().asMicroseconds());
         actClock.restart();
         herbie.render();

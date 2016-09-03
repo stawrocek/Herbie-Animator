@@ -8,6 +8,7 @@ HerbieAnimator::HerbieAnimator()
     createHUD();
     scanner.readDir("test/", &vFrames, &screenWidth, &screenHeight);
     actFrame = 0;
+    view = sf::View(sf::FloatRect(0.f, 0.f, window->getSize().x, window->getSize().y));
 }
 
 void HerbieAnimator::setLeftHUDText(){
@@ -15,20 +16,22 @@ void HerbieAnimator::setLeftHUDText(){
         leftHUD.setString("Press 'TAB' to show\n");
     }
     else if(leftHUDState == 1){
-        leftHUD.setString(" *** -- Controls -- ***\n"
-                          "+------+---------------+\n"
-                          "| key  |    action     |\n"
-                          "+------+---------------+\n"
-                          "| '<'  |previous frame |\n"
-                          "| '>'  |next frame     |\n"
-                          "| '-'  |decrease FPS   |\n"
-                          "| '+'  |increase FPS   |\n"
-                          "| 'p'  |pause          |\n"
-                          "| 'o'  |open directory |\n"
-                          "| 'i'  |info           |\n"
-                          "| 'v'  |visit webpage  |\n"
-                          "| 'TAB'|hide controls  |\n"
-                          "+------+---------------+");
+        leftHUD.setString(" **** --  Controls  -- **** \n"
+                          "+----------+---------------+\n"
+                          "| key      |    action     |\n"
+                          "+----------+---------------+\n"
+                          "| '<'      |previous frame |\n"
+                          "| '>'      |next frame     |\n"
+                          "| '-'      |decrease FPS   |\n"
+                          "| '+'      |increase FPS   |\n"
+                          "| 'p'      |pause          |\n"
+                          "| 'o'      |open directory |\n"
+                          "| 'wsad'   |move camera    |\n"
+                          "| 'scroll' |zoom camera    |\n"
+                          "| 'i'      |info           |\n"
+                          "| 'v'      |visit webpage  |\n"
+                          "| 'TAB'    |hide controls  |\n"
+                          "+------+-------------------+");
     }
     else if (leftHUDState == 2){
         leftHUD.setString(" *** -- Info -- ***\n"
@@ -105,7 +108,8 @@ void HerbieAnimator::translateEvent(sf::Event event)
         }
     }
     if (event.type == sf::Event::Resized){
-        window->setView(sf::View(sf::FloatRect(0, 0, event.size.width, event.size.height)));
+        view.reset(sf::FloatRect(0, 0, event.size.width, event.size.height));
+
         screenWidth = event.size.width;
         screenHeight = event.size.height;
         for(int i = 0; i < vFrames.size(); i++){
@@ -134,6 +138,9 @@ void HerbieAnimator::translateEvent(sf::Event event)
             launchGithub();
         }
     }
+    if(event.type == sf::Event::MouseWheelMoved){
+        view.zoom(1.f+event.mouseWheel.delta*0.1f);
+    }
 }
 
 void HerbieAnimator::launchGithub(){
@@ -155,8 +162,20 @@ void HerbieAnimator::launchGithub(){
     #endif
 }
 
-void HerbieAnimator::continuousEvents(){
-
+void HerbieAnimator::continuousEvents(float delta){
+    float moveSpeed=750.0;
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::A)){
+        view.move(moveSpeed*delta, 0);
+    }
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::D)){
+        view.move(-moveSpeed*delta, 0);
+    }
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::W)){
+        view.move(0, moveSpeed*delta);
+    }
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::S)){
+        view.move(0, -moveSpeed*delta);
+    }
 }
 
 void HerbieAnimator::act(double deltaTime)
@@ -183,13 +202,15 @@ void HerbieAnimator::act(double deltaTime)
 
 void HerbieAnimator::render()
 {
-    //b5, 8c, 4f
     window->clear(sf::Color(0xb4, 0x8c,0x4f));
 
+    window->setView(view);
     if(actFrame < vFrames.size())
     {
         window->draw(vFrames[actFrame]->sprite);
     }
+
+    window->setView(sf::View(sf::FloatRect(0.f, 0.f, window->getSize().x, window->getSize().y)));
     window->draw(leftHUD);
     window->draw(rightHUD);
     window->display();
