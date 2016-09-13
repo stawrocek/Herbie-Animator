@@ -41,6 +41,8 @@ class HerbieAnimator
         double screenWidth=800;
         double screenHeight=600;
 
+        sf::Texture backgroundTexture;
+        sf::Sprite backgroundSprite;
         sf::Font font;
         sf::Text rightHUD;
         sf::Text leftHUD;

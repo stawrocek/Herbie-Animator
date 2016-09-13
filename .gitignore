@@ -29,6 +29,8 @@
 
 #Code::Blocks
 *.depend
+*.layout
+*.cbp
 
 #release
 *release

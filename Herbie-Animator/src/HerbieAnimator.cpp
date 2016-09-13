@@ -3,6 +3,10 @@
 HerbieAnimator::HerbieAnimator()
 {
     window = new sf::RenderWindow(sf::VideoMode(screenWidth, screenHeight), "Herbie Animator");
+    backgroundTexture.loadFromFile("data/background.png");
+    backgroundSprite = sf::Sprite(backgroundTexture);
+    backgroundSprite.setOrigin(backgroundSprite.getGlobalBounds().width/2.f, backgroundSprite.getGlobalBounds().height/2.f);
+    backgroundSprite.setPosition(screenWidth/2.0, screenHeight/2.0);
     imageIcon.loadFromFile("data/icon.jpg");
     window->setIcon(imageIcon.getSize().x, imageIcon.getSize().y, imageIcon.getPixelsPtr());
     createHUD();
@@ -204,7 +208,9 @@ void HerbieAnimator::render()
 {
     window->clear(sf::Color(0xb4, 0x8c,0x4f));
 
+    window->draw(backgroundSprite);
     window->setView(view);
+
     if(actFrame < vFrames.size())
     {
         window->draw(vFrames[actFrame]->sprite);
